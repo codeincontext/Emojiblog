@@ -1,0 +1,9 @@
+- if @records
+  - @records.each do |doc|
+    .post
+      %span.date= doc['date'].strftime("%b %d")
+      .body
+        .desc= doc['title']
+        = doc['content']
+- else
+  No entries
