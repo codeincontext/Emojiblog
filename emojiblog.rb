@@ -1,41 +1,33 @@
+require 'daemons'
 require 'sinatra'
-require 'json'
-require 'active_support/core_ext/hash/slice'
-require 'active_support/core_ext/time/calculations'
-require 'date'
 require 'mongo'
 require 'haml'
 
-configure do
-  enable :sessions
-  set :session_secret, 'orgnsorgjr9fer9f8'
-  
-  DB = Mongo::Connection.new['emojiblog']['skattyadz:posts']
-end
+@base_name = 'emojiblog'
+pwd = Dir.pwd
+file = pwd + '/emojiblog.rb'
 
-get '/' do
-  selector = {}
-  opts = {sort: ['time', :desc]}
-  
-  # html = ''
-  # DB.find(selector, opts).inject(html) do |result, document|
-  #   date = document['date'].strftime("%B %d")   
-  #   result + "<h2><span class='date'>#{date}</span> - #{document['title']}</h2><p>#{document['content']}</p>"
-  # end
-  @records = DB.find(selector, opts)
-  haml :index
-end
+Daemons.run_proc(
+  'emojiblog', # name of daemon
+#  :dir_mode => :normal
+#  :dir => File.join(pwd, 'tmp/pids'), # directory where pid file will be stored
+  :multiple => false,
+  :backtrace => true,
+  :monitor => true,
+  :log_output => true
+) do
+  Dir.chdir(pwd)
 
-get '/supersecretentrypage' do
-  haml :new
-end
+  configure do
+    DB = Mongo::Connection.new['emojiblog']['skattyadz:posts']
+  end
 
-post '/supersecretentrypage' do
-  DB.insert({
-    date: Time.now.utc.midnight,
-    title: params['title'],
-    content: params['content']
-  })
+  get '/' do
+    selector = {}
+    opts = {sort: ['date', :desc]}
+
+    @records = DB.find(selector, opts)
+    haml :index
+  end
   
-  haml :index
 end
