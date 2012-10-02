@@ -1,8 +1,8 @@
 environment: production
 chdir: /home/syd/Emojiblog
 address: 127.0.0.1
-user: root
-group: root
+user: syd
+group: syd
 port: 3030
 pid: /home/syd/Emojiblog/tmp/thin.pid
 rackup: /home/syd/Emojiblog/config.ru

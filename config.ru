@@ -2,9 +2,9 @@ require 'rubygems'
 require 'sinatra'
 
 set :environment, :production
-set :port, 8000
+set :port, 3030
 disable :run, :reload
 
-require 'emojiblog'
+require './emojiblog'
 
 run Sinatra::Application
